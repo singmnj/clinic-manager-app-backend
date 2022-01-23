@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+var morgan = require('morgan');
 const oracledb = require('oracledb');
 const dbConfig = require('./dbconfig.js');
 const app = express();
@@ -11,6 +12,7 @@ const consultationRouter = require('./routes/consultationRoutes');
 app.use(express.static('build'));
 app.use(cors());
 app.use(express.json());
+app.use(morgan('tiny'));
 
 app.get('/', (request, response) => {
 	response.send('<h1>CMA API</h1>');

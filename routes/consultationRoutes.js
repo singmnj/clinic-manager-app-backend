@@ -3,9 +3,9 @@ const consultationController = require('../controllers/consultationController');
 
 var consultationRouter = express.Router();
 
-consultationRouter.get('/patient/:pid/consultation', consultationController.getConsultationsForPatient);
-consultationRouter.post('/patient/:pid/consultation', consultationController.createConsultationForPatient);
-consultationRouter.delete('/patient/:pid/consultation/:cid', consultationController.deleteConsultationForPatient);
-consultationRouter.put('/patient/:pid/consultation/:cid', consultationController.updateConsultation);
+consultationRouter.get('/api/patients/:pid/consultations', consultationController.getConsultationsForPatient);
+consultationRouter.post('/api/patients/:pid/consultations', consultationController.createConsultationForPatient);
+consultationRouter.delete('/api/patients/:pid/consultations/:cid', consultationController.deleteConsultationForPatient);
+consultationRouter.put('/api/patients/:pid/consultations/:cid', consultationController.updateConsultation);
 
 module.exports = consultationRouter;

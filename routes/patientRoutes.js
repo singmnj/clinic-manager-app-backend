@@ -3,9 +3,9 @@ const patientController = require('../controllers/patientController');
 
 var patientRouter = express.Router();
 
-patientRouter.get('/patient', patientController.getAllPatients);
-patientRouter.post('/patient', patientController.addPatient);
-patientRouter.delete('/patient/:pid', patientController.deletePatient);
-patientRouter.put('/patient/:pid', patientController.updatePatient);
+patientRouter.get('/api/patients', patientController.getAllPatients);
+patientRouter.post('/api/patients', patientController.addPatient);
+patientRouter.delete('/api/patients/:pid', patientController.deletePatient);
+patientRouter.put('/api/patients/:pid', patientController.updatePatient);
 
 module.exports = patientRouter;
