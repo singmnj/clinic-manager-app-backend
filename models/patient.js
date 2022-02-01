@@ -64,7 +64,7 @@ const updatePatient = async(patientId, patient) => {
 		const soda = connection.getSodaDatabase();
 		const patientCollection = await soda.openCollection('patients');
 		let doc = await patientCollection.find().filter({ 'id' : patientId }).getOne();
-		if(doc.key){
+		if(doc && 'key' in doc){
 			await patientCollection.find().key(doc.key).replaceOneAndGet(patient);
 			return true;
 		}

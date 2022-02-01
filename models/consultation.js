@@ -63,7 +63,7 @@ const deleteConsultation = async(patientId, consultationId) => {
 		if(result.count !== 1)
 			return false;
 		let patientDoc = await patientCollection.find().filter({ 'id' : patientId }).getOne();
-		if(!patientDoc.key)
+		if(!patientDoc)
 			return false;
 		let updatedPatient = patientDoc.getContent();
 		updatedPatient.consultationIds = updatedPatient.consultationIds.filter(id => id !== consultationId.toString());
@@ -88,7 +88,7 @@ const updateConsultation = async(consultationId, consultation) => {
 		console.log(consultationId);
 		console.log(consultation);
 		let consultationDoc = await consultationCollection.find().filter({ 'id' : consultationId }).getOne();
-		if(!consultationDoc.key)
+		if(!consultationDoc)
 			return false;
 		console.log(consultationDoc);
 		await consultationCollection.find().key(consultationDoc.key).replaceOneAndGet(consultation);
