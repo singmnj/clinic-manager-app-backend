@@ -1,4 +1,4 @@
-const patient = require('../models/patient.js');
+const patient = require('../model/patient');
 
 let getAllPatients = async(request, response) => {
 	let patients = await patient.getAllPatients();

@@ -1,4 +1,4 @@
-const consultation = require('../models/consultation.js');
+const consultation = require('../model/consultation');
 
 const getConsultationsForPatient = async (request, response) => {
 	let consultations = await consultation.getConsultations(request.params.pid);

@@ -8,43 +8,46 @@ const express = require('express');
 const cors = require('cors');
 var morgan = require('morgan');
 const oracledb = require('oracledb');
-const dbConfig = require('./dbconfig.js');
-const app = express();
-const patientRouter = require('./routes/patientRoutes');
-const consultationRouter = require('./routes/consultationRoutes');
-const authRouter = require('./routes/authRoutes');
-const passport = require('passport');
-const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
-app.use(express.static('build'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const dbConfig = require('./config/dbconfig');
+const corsOptions = require('./config/corsOptions');
+const verifyJWT = require('./middleware/verifyJWT');
+const errorHandler = require('./middleware/errorHandler');
+
+const app = express();
+
+// logger middleware
 app.use(morgan('tiny'));
 
-app.use(
-	cors({
-		origin: 'http://localhost:3000', // <-- location of the react app we're connecting to
-		credentials: true,
-	})
-);
-app.use(
-	session({
-		secret: process.env.SESSION_SECRET,
-		resave: false,
-		saveUninitialized: false,
-	})
-);
-app.use(passport.initialize());
-app.use(passport.session());
-require('./strategies/localStrategy')(passport);
+// Cross Origin Resource Sharing
+app.use(cors(corsOptions));
+
+// built-in middleware to handle urlencoded form data
+app.use(express.urlencoded({ extended: false }));
+
+// built-in middleware for json
+app.use(express.json());
+
+// middleware for cookies
+app.use(cookieParser());
+
+// serve static files
+app.use(express.static('build'));
 
 app.get('/', (request, response) => {
 	response.send('<h1>CMA API</h1>');
 });
 
-app.use(patientRouter);
-app.use(consultationRouter);
-app.use(authRouter);
+app.use(require('./routes/register'));
+app.use(require('./routes/auth'));
+app.use(require('./routes/refresh'));
+app.use(require('./routes/logout'));
+app.use(verifyJWT);
+app.use(require('./routes/patient'));
+app.use(require('./routes/consultation'));
+
+app.use(errorHandler);
 
 oracledb.initOracleClient({ libDir: process.env.ORACLE_LIBDIR });
 oracledb.autoCommit = true;

@@ -39,7 +39,31 @@ const searchUser = async(searchObject) => {
 	}
 };
 
+const updateUser = async(user) => {
+	let connection;
+	try {
+		connection = await oracledb.getConnection();
+		const soda = connection.getSodaDatabase();
+		const userCollection = await soda.openCollection('users');
+		let doc = await userCollection.find().filter({ 'username': user.username }).getOne();
+		if(doc?.key){
+			await userCollection.find().key(doc.key).replaceOneAndGet(user);
+			return true;
+		}
+		else
+			return false;
+	}
+	catch(err) {
+		console.log(err);
+	}
+	finally {
+		if(connection)
+			await connection.close();
+	}
+};
+
 module.exports = {
 	addUser,
-	searchUser
+	searchUser,
+	updateUser
 };
