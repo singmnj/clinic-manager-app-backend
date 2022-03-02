@@ -14,11 +14,15 @@ const dbConfig = require('./config/dbconfig');
 const corsOptions = require('./config/corsOptions');
 const verifyJWT = require('./middleware/verifyJWT');
 const errorHandler = require('./middleware/errorHandler');
+const credentials = require('./middleware/credentials');
 
 const app = express();
 
 // logger middleware
 app.use(morgan('tiny'));
+
+//Handle options credentials check - before CORS
+app.use(credentials);
 
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));

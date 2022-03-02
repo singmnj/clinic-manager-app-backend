@@ -25,7 +25,9 @@ const handleLogin = async (request, response) => {
 			{ expiresIn: '1d' }
 		);
 		await users.updateUser({ ...foundUser, refreshToken });
-		response.cookie('jwt', refreshToken, { httpOnly: true, secure: true , maxAge: 24 * 60 * 60 * 1000 });
+		response.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true
+			, maxAge: 24 * 60 * 60 * 1000 });
+		console.log('logged in: ', { accessToken });
 		response.json({ accessToken });
 	}
 	else {

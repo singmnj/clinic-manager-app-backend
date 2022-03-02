@@ -22,7 +22,7 @@ const handleRefreshToken = async (request, response) => {
 				process.env.ACCESS_TOKEN_SECRET,
 				{ expiresIn: '300s' }
 			);
-			response.json({ accessToken });
+			response.json({ username: decoded.username, accessToken });
 		}
 	);
 };
