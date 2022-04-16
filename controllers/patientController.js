@@ -1,5 +1,13 @@
 const patient = require('../model/patient');
 
+let getPatient = async(request, response) => {
+	let patientId = request.params.pid;
+	let singlePatient = await patient.getPatient(patientId);
+	if(!singlePatient)
+		response.status(404).send();
+	response.json(singlePatient);
+};
+
 let getAllPatients = async(request, response) => {
 	let patients = await patient.getAllPatients();
 	response.json(patients);
@@ -29,6 +37,7 @@ let updatePatient = async(request, response) => {
 
 
 module.exports = {
+	getPatient,
 	getAllPatients,
 	addPatient,
 	deletePatient,

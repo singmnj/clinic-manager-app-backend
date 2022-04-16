@@ -1,6 +1,26 @@
 const oracledb = require('oracledb');
 const { v4: uuidv4 } = require('uuid');
 
+const getPatient = async(patientId) => {
+	let connection;
+	try {
+		connection = await oracledb.getConnection();
+		const soda = connection.getSodaDatabase();
+		const patientCollection = await soda.openCollection('patients');
+		let doc = await patientCollection.find().filter({ 'id' : patientId }).getOne();
+		if(doc?.key)
+			return doc.getContent();
+		return null;
+	}
+	catch(err) {
+		console.log(err);
+	}
+	finally {
+		if(connection)
+			await connection.close();
+	}
+};
+
 const getAllPatients = async() => {
 	let connection;
 	try {
@@ -81,6 +101,7 @@ const updatePatient = async(patientId, patient) => {
 };
 
 module.exports = {
+	getPatient,
 	getAllPatients,
 	addPatient,
 	deletePatient,

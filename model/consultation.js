@@ -12,7 +12,7 @@ const getConsultations = async(patientId) => {
 		const consultation_collection = await soda.openCollection('consultations');
 		let consultations = [];
 		let consultationDoc;
-		consultationIds.forEach(async(consultationId) => {
+		consultationIds?.forEach(async(consultationId) => {
 			consultationDoc = await consultation_collection.find().filter({ 'id' : consultationId }).getOne();
 			consultations.push(consultationDoc.getContent());
 		});
@@ -39,7 +39,9 @@ const createConsultation = async(patientId, consultation) => {
 		await consultationCollection.insertOneAndGet(consultation);
 		let patientDoc = await patientCollection.find().filter({ 'id' : patientId }).getOne();
 		let updatedPatient = patientDoc.getContent();
-		updatedPatient.consultationIds.push(newId.toString());
+		if(updatedPatient && !updatedPatient.consultationIds)
+			updatedPatient.consultationIds = [];
+		updatedPatient?.consultationIds.push(newId.toString());
 		await patientCollection.find().key(patientDoc.key).replaceOneAndGet(updatedPatient);
 		return newId;
 	}
