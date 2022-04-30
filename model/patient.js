@@ -27,8 +27,19 @@ const getAllPatients = async() => {
 		connection = await oracledb.getConnection();
 		const soda = connection.getSodaDatabase();
 		const patientCollection = await soda.openCollection('patients');
-		let docs = await patientCollection.find().getDocuments();
-		return docs.map(doc => doc.getContent());
+		const consultationCollection = await soda.openCollection('consultations');
+		let patientDocs = await patientCollection.find().getDocuments();
+		let patients = patientDocs.map(doc => doc.getContent());
+		let today = new Date();
+		patients.map(async p => {
+			p.due = 0;
+			p.consultationIds?.forEach(async(consultationId) => {
+				let c = (await consultationCollection.find().filter({ 'id' : consultationId }).getOne()).getContent();
+				p.due += c.amountCharged - c.amountReceived;
+			});
+			p.age = today.getFullYear() - new Date(p.dob).getFullYear();
+		});
+		return patients;
 	}
 	catch(err) {
 		console.log(err);
@@ -65,6 +76,14 @@ const deletePatient = async(patientId) => {
 		connection = await oracledb.getConnection();
 		const soda = connection.getSodaDatabase();
 		const patientCollection = await soda.openCollection('patients');
+		const consultationCollection = await soda.openCollection('consultations');
+		//first delete all consultations related to this patient
+		let patientDoc = await patientCollection.find().filter({ 'id': patientId }).getOne();
+		if(patientDoc?.key) {
+			patientDoc.getContent().consultationIds?.forEach(async (consultationId) => {
+				await consultationCollection.find().filter({ 'id': consultationId }).remove();
+			});
+		}
 		let result = await patientCollection.find().filter({ 'id' : patientId }).remove();
 		return result.count === 1 ? true : false;
 	}
