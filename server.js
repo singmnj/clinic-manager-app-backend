@@ -48,6 +48,7 @@ app.use(require('./routes/auth'));
 app.use(require('./routes/refresh'));
 app.use(require('./routes/logout'));
 app.use(verifyJWT);
+app.use(require('./routes/stats'));
 app.use(require('./routes/patient'));
 app.use(require('./routes/consultation'));
 
