@@ -7,7 +7,7 @@ const handleRefreshToken = async (request, response) => {
 	const cookies = request.cookies;
 	//check for validity of request body
 	if(!cookies?.jwt) return response.sendStatus(401);
-	console.log(cookies.jwt);
+	//console.log(cookies.jwt);
 	const refreshToken = cookies.jwt;
 	const foundUser = await users.searchUser({ 'refreshToken': refreshToken });
 	if(!foundUser) return response.sendStatus(403); //Forbidden
