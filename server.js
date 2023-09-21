@@ -1,16 +1,16 @@
 
 if (process.env.NODE_ENV !== 'production') {
-	// Load environment variables from .env file in non prod environments
-	require('dotenv').config();
+  // Load environment variables from .env file in non prod environments
+  require('dotenv').config();
 }
 
 const express = require('express');
 const cors = require('cors');
 var morgan = require('morgan');
-const oracledb = require('oracledb');
+const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
-const dbConfig = require('./config/dbconfig');
+const connectDB = require('./config/dbConnection');
 const corsOptions = require('./config/corsOptions');
 const verifyJWT = require('./middleware/verifyJWT');
 const errorHandler = require('./middleware/errorHandler');
@@ -40,8 +40,9 @@ app.use(cookieParser());
 app.use(express.static('build'));
 
 app.get('/', (request, response) => {
-	response.send('<h1>CMA API</h1>');
+  response.send('<h1>CMA API</h1>');
 });
+
 
 app.use(require('./routes/register'));
 app.use(require('./routes/auth'));
@@ -54,37 +55,37 @@ app.use(require('./routes/consultation'));
 
 app.use(errorHandler);
 
-oracledb.initOracleClient({ libDir: process.env.ORACLE_LIBDIR });
-oracledb.autoCommit = true;
+//Connect to MongoDB
+connectDB();
 
 const PORT = process.env.PORT || 3001;
-const server = app.listen(PORT, async() => {
-	try {
-		console.log('Create Connection pool');
-		await oracledb.createPool(dbConfig);
-		console.log('Created Connection pool');
-		const connection = await oracledb.getConnection();
-		const soda = connection.getSodaDatabase();
-		await soda.createCollection('patients');
-		await soda.createCollection('consultations');
-		await soda.createCollection('users');
-		console.log('Created Collections');
-		connection.close();
-		console.log(`Server running on port ${PORT}`);
-	}
-	catch(err) {
-		console.error(err);
-	}
+
+mongoose.connection.once('open', () => {
+  console.log('connected to MongoDB.');
+  const server = app.listen(PORT, async () => {
+    try {
+      console.log(`Server running on port ${PORT}`);
+    }
+    catch (err) {
+      console.error(err);
+    }
+  });
+
+  const handleShutdown = () => {
+    console.log('termination signal received.');
+    console.log('closing http server.');
+    server.close(async () => {
+      console.log('http server closed.');
+      mongoose.connection.close(false).then(() => {
+        console.log('MongoDB connection closed.');
+        process.exit(0);
+      });
+    });
+  };
+
+  process.on('SIGINT', handleShutdown);
+  process.on('SIGTERM', handleShutdown);
+
 });
 
-process.on('SIGINT', () => {
-	server.close(async() => {
-		console.log('Process terminated\nclosing connection pool');
-		try {
-			await oracledb.getPool().close(10);
-			console.log('Pool closed');
-		} catch(err) {
-			console.error(err);
-		}
-	});
-});
+

@@ -1,38 +1,43 @@
-const patient = require('../model/patient');
+const Patient = require('../model/Patient');
+const Consultation = require('../model/Consultation');
+
 
 let getPatient = async(request, response) => {
 	let patientId = request.params.pid;
-	let singlePatient = await patient.getPatient(patientId);
-	if(!singlePatient)
-		response.status(404).send();
-	response.json(singlePatient);
+	let patientDoc = await Patient.findById(patientId).exec();
+	if(!patientDoc)
+		response.sendStatus(404);
+	response.json(patientDoc);
 };
 
-let getAllPatients = async(request, response) => {
-	let patients = await patient.getAllPatients();
-	response.json(patients);
+let getAllPatients = async(_request, response) => {
+	let patientDocs = await Patient.find({}).exec();
+	response.json(patientDocs);
 };
 
 let addPatient = async(request, response) => {
-	let newPatientId = await patient.addPatient(request.body);
-	response.json({ 'id': newPatientId });
+	let newPatientDoc = await Patient.create(request.body);
+	response.json(newPatientDoc);
 };
 
 let deletePatient = async(request, response) => {
 	let patientId = request.params.pid;
-	let isDeleted = await patient.deletePatient(patientId);
-	if (isDeleted)
-		response.status(200).send('Deleted Patient Successfully.');
+	let deletedPatientDoc = await Patient.findByIdAndDelete(patientId).exec();
+	if (deletedPatientDoc) {
+		Consultation.deleteMany({'patientId': deletedPatientDoc.id}).exec();
+		response.json({message: 'Deleted Patient Successfully.'});
+	}
 	else
-		response.status(404).send();
+		response.sendStatus(404);
 };
 
 let updatePatient = async(request, response) => {
-	let isUpdated = await patient.updatePatient(request.params.pid, request.body);
-	if (isUpdated)
-		response.status(200).send('Updated Patient Successfully.');
+	let patientId = request.params.pid;
+	let updatedPatientDoc = await Patient.findByIdAndUpdate(patientId, request.body).exec();
+	if (updatedPatientDoc)
+		response.json({message: 'Updated Patient Successfully.'});
 	else
-		response.status(404).send();
+		response.sendStatus(404);
 };
 
 

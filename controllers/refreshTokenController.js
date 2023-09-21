@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const users = require('../model/user');
+const User = require('../model/User');
+
 
 const handleRefreshToken = async (request, response) => {
 
@@ -9,7 +10,7 @@ const handleRefreshToken = async (request, response) => {
 	if(!cookies?.jwt) return response.sendStatus(401);
 	//console.log(cookies.jwt);
 	const refreshToken = cookies.jwt;
-	const foundUser = await users.searchUser({ 'refreshToken': refreshToken });
+	const foundUser = await User.findOne({ 'refreshToken': refreshToken }).exec();
 	if(!foundUser) return response.sendStatus(403); //Forbidden
 	//evaluate jwt
 	jwt.verify(

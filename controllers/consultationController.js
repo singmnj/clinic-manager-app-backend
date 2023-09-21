@@ -1,36 +1,46 @@
-const consultation = require('../model/consultation');
+const Consultation = require('../model/Consultation');
+const Patient = require('../model/Patient');
+
 
 const getConsultationsForPatient = async (request, response) => {
-	let consultations = await consultation.getConsultations(request.params.pid);
-	response.json(consultations);
+	let patientId = request.params.pid;
+	let consultationDocs = await Consultation.find({'patientId': patientId}).exec();
+	response.json(consultationDocs);
 };
 
 const createConsultationForPatient = async (request, response) => {
-	let newConsultationId = await consultation.createConsultation(request.params.pid, request.body);
-	response.json( { 'id' : newConsultationId } );
+	let patientId = request.params.pid;
+	let patientDoc = await Patient.exists({_id: patientId});
+	if(patientDoc){
+		let newConsultationDoc = await Consultation.create({...request.body, 'patientId': patientId});
+		response.json(newConsultationDoc);
+	}
+	else
+		response.sendStatus(404);
 };
 
 const updateConsultation = async (request, response) => {
-	let isUpdated = await consultation.updateConsultation(request.params.cid, request.body);
-	if (isUpdated)
-		response.status(200).send('Updated Consultation Successfully.');
+	let consultationId = request.params.cid;
+	let updatedConsultationDoc = await Consultation.findByIdAndUpdate(consultationId, request.body).exec();
+	if (updatedConsultationDoc)
+		response.json({message: 'Updated Consultation Successfully.'});
 	else
-		response.status(404).send();
+		response.sendStatus(404);
 };
 
-const deleteConsultationForPatient = async (request, response) => {
-	let pid = request.params.pid;
-	let cid = request.params.cid;
-	let isDeleted = await consultation.deleteConsultation(pid, cid);
-	if (isDeleted)
-		response.status(200).send('Deleted Consultation Successfully.');
+const deleteConsultation = async (request, response) => {
+	let consultationId = request.params.cid;
+	let deletedConsultationDoc = await Consultation.findByIdAndDelete(consultationId).exec();
+	if (deletedConsultationDoc)
+		response.json({message: 'Deleted Consultation Successfully.'});
 	else
-		response.status(404).send();
+		response.sendStatus(404);
 };
+
 
 module.exports = {
 	getConsultationsForPatient,
 	createConsultationForPatient,
 	updateConsultation,
-	deleteConsultationForPatient
+	deleteConsultation
 };
