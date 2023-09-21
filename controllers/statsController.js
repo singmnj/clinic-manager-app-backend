@@ -21,7 +21,7 @@ let getStats = async(_request, response) => {
 		date.setDate(date.getDate() - i);
 		strDate = date.toISOString().split('T')[0];
 		numConsultations = await Consultation.count({ 'date': strDate }).exec();
-		lastNDaysConsultations.push({date: strDate, consultations: numConsultations});
+		lastNDaysConsultations.push({ date: strDate, consultations: numConsultations });
 	}
 	stats.lastNDaysConsultations = lastNDaysConsultations;
 
@@ -38,7 +38,7 @@ let getStats = async(_request, response) => {
 		}).exec();
 		month = startDate.toLocaleString('default', { month: 'long' });
 		earnings = consultationDocs.reduce((acc, c) => acc + c.amountReceived, 0);
-		lastNMonthsEarnings.push({month, earnings});
+		lastNMonthsEarnings.push({ month, earnings });
 	}
 	stats.lastNMonthsEarnings = lastNMonthsEarnings;
 
@@ -48,23 +48,23 @@ let getStats = async(_request, response) => {
 	//Calculate Dues for each patient and store them in descending order of due amount
 	let patientsWithDues =  await Consultation.aggregate().group(
 		{
-			_id: "$patientId", 
-			totalDues: { 
-				$sum : { $subtract: ["$amountCharged", "$amountReceived"] } 
+			_id: '$patientId',
+			totalDues: {
+				$sum : { $subtract: ['$amountCharged', '$amountReceived'] }
 			}
 		})
 		.match({ totalDues: { $gt: 0 } })
-		.lookup({ 
-			from: 'patients', 
-			localField: '_id', 
-			foreignField: '_id', 
-			as: 'patient_info' 
+		.lookup({
+			from: 'patients',
+			localField: '_id',
+			foreignField: '_id',
+			as: 'patient_info'
 		})
 		.unwind('$patient_info')
 		.project({
-			_id: 0, 
-			totalDues: 1, 
-			fullName: {$concat: [ "$patient_info.firstName", " ", "$patient_info.lastName"]}
+			_id: 0,
+			totalDues: 1,
+			fullName: { $concat: [ '$patient_info.firstName', ' ', '$patient_info.lastName'] }
 		})
 		.sort({ totalDues: -1 });
 	console.log(patientsWithDues);

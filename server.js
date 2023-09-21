@@ -1,7 +1,7 @@
 
 if (process.env.NODE_ENV !== 'production') {
-  // Load environment variables from .env file in non prod environments
-  require('dotenv').config();
+	// Load environment variables from .env file in non prod environments
+	require('dotenv').config();
 }
 
 const express = require('express');
@@ -40,7 +40,7 @@ app.use(cookieParser());
 app.use(express.static('build'));
 
 app.get('/', (request, response) => {
-  response.send('<h1>CMA API</h1>');
+	response.send('<h1>CMA API</h1>');
 });
 
 
@@ -61,30 +61,30 @@ connectDB();
 const PORT = process.env.PORT || 3001;
 
 mongoose.connection.once('open', () => {
-  console.log('connected to MongoDB.');
-  const server = app.listen(PORT, async () => {
-    try {
-      console.log(`Server running on port ${PORT}`);
-    }
-    catch (err) {
-      console.error(err);
-    }
-  });
+	console.log('connected to MongoDB.');
+	const server = app.listen(PORT, async () => {
+		try {
+			console.log(`Server running on port ${PORT}`);
+		}
+		catch (err) {
+			console.error(err);
+		}
+	});
 
-  const handleShutdown = () => {
-    console.log('termination signal received.');
-    console.log('closing http server.');
-    server.close(async () => {
-      console.log('http server closed.');
-      mongoose.connection.close(false).then(() => {
-        console.log('MongoDB connection closed.');
-        process.exit(0);
-      });
-    });
-  };
+	const handleShutdown = () => {
+		console.log('termination signal received.');
+		console.log('closing http server.');
+		server.close(async () => {
+			console.log('http server closed.');
+			mongoose.connection.close(false).then(() => {
+				console.log('MongoDB connection closed.');
+				process.exit(0);
+			});
+		});
+	};
 
-  process.on('SIGINT', handleShutdown);
-  process.on('SIGTERM', handleShutdown);
+	process.on('SIGINT', handleShutdown);
+	process.on('SIGTERM', handleShutdown);
 
 });
 
