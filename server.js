@@ -58,7 +58,7 @@ app.use(errorHandler);
 //Connect to MongoDB
 connectDB();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 mongoose.connection.once('open', () => {
 	console.log('connected to MongoDB.');
