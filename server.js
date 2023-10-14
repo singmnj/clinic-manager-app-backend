@@ -6,7 +6,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const cors = require('cors');
-var morgan = require('morgan');
+const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 

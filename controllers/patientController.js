@@ -24,7 +24,7 @@ let deletePatient = async(request, response) => {
 	let patientId = request.params.pid;
 	let deletedPatientDoc = await Patient.findByIdAndDelete(patientId).exec();
 	if (deletedPatientDoc) {
-		Consultation.deleteMany({ 'patientId': deletedPatientDoc.id }).exec();
+		await Consultation.deleteMany({ 'patientId': deletedPatientDoc.id }).exec();
 		response.json({ message: 'Deleted Patient Successfully.' });
 	}
 	else

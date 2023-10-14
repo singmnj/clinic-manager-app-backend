@@ -1,7 +1,7 @@
 const express = require('express');
 const consultationController = require('../controllers/consultationController');
 
-var router = express.Router();
+const router = express.Router();
 
 router.get('/api/patients/:pid/consultations', consultationController.getConsultationsForPatient);
 router.post('/api/patients/:pid/consultations', consultationController.createConsultationForPatient);

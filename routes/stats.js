@@ -1,7 +1,7 @@
 const express = require('express');
 const statsController = require('../controllers/statsController');
 
-var router = express.Router();
+const router = express.Router();
 
 router.get('/api/stats', statsController.getStats);
 

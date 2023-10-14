@@ -1,7 +1,7 @@
 const express = require('express');
 const patientController = require('../controllers/patientController');
 
-var router = express.Router();
+const router = express.Router();
 
 router.get('/api/patients/:pid', patientController.getPatient);
 router.get('/api/patients', patientController.getAllPatients);
