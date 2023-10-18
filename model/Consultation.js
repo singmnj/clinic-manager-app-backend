@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const consultationSchema = new Schema({
 	date: {
 		type: Date,
-		required: true
+		required: true,
 	},
 	notes: String,
 	medicines: String,
@@ -13,12 +13,12 @@ const consultationSchema = new Schema({
 	amountReceived: Number,
 	maramTherapyDone: {
 		type: Boolean,
-		required: true
+		required: true,
 	},
 	patientId: {
 		type: Schema.Types.ObjectId,
-		ref: 'Patient'
-	}
+		ref: "Patient",
+	},
 });
 
-module.exports = mongoose.model('Consultation', consultationSchema);
+module.exports = mongoose.model("Consultation", consultationSchema);
