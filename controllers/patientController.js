@@ -4,8 +4,8 @@ const Consultation = require("../model/Consultation");
 let getPatient = async (request, response) => {
 	let patientId = request.params.pid;
 	let patientDoc = await Patient.findById(patientId).exec();
-	if (!patientDoc) response.sendStatus(404);
-	response.json(patientDoc);
+	if (patientDoc) response.json(patientDoc);
+	else response.sendStatus(404);
 };
 
 let getAllPatients = async (_request, response) => {
