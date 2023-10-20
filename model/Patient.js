@@ -16,7 +16,10 @@ const patientSchema = new Schema({
 	},
 	phone: String,
 	address: String,
-	city: String,
+	city: {
+		type: String,
+		required: true,
+	},
 	notes: String,
 	gender: {
 		type: String,
@@ -25,6 +28,15 @@ const patientSchema = new Schema({
 	dob: {
 		type: Date,
 		required: true,
+	},
+});
+
+patientSchema.set("toJSON", {
+	virtuals: true,
+	transform: (doc, converted) => {
+		delete converted._id;
+		delete converted.__v;
+		converted.dob = doc.dob.toISOString().substring(0, 10);
 	},
 });
 

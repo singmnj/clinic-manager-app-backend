@@ -21,4 +21,13 @@ const consultationSchema = new Schema({
 	},
 });
 
+consultationSchema.set("toJSON", {
+	virtuals: true,
+	transform: (doc, converted) => {
+		delete converted._id;
+		delete converted.__v;
+		converted.date = doc.date.toISOString().substring(0, 10);
+	},
+});
+
 module.exports = mongoose.model("Consultation", consultationSchema);
